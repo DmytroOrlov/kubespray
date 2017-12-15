@@ -1,3 +1,7 @@
+```sh
+ansible-playbook -i inventory/local-tests.cfg -b cluster.yml
+ssh node1 kubectl create clusterrolebinding supdefault --clusterrole=cluster-admin --serviceaccount=kube-system:default
+```
 ![Kubernetes Logo](https://s28.postimg.org/lf3q4ocpp/k8s.png)
 
 ## Deploy a production ready kubernetes cluster

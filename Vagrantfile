@@ -18,14 +18,17 @@ SUPPORTED_OS = {
 }
 
 # Defaults for config options defined in CONFIG
-$num_instances = 3
+$num_instances = 1
 $instance_name_prefix = "k8s"
 $vm_gui = false
-$vm_memory = 2048
-$vm_cpus = 1
+$vm_memory = 4800
+$vm_cpus = 2
 $shared_folders = {}
 $forwarded_ports = {}
 $subnet = "172.17.8"
+$ip_base = 100
+#$subnet = "192.168.178"
+#$ip_base = 78
 $os = "ubuntu"
 $network_plugin = "flannel"
 # The first three nodes are etcd servers
@@ -60,7 +63,7 @@ end
 if Vagrant.has_plugin?("vagrant-proxyconf")
     $no_proxy = ENV['NO_PROXY'] || ENV['no_proxy'] || "127.0.0.1,localhost"
     (1..$num_instances).each do |i|
-        $no_proxy += ",#{$subnet}.#{i+100}"
+        $no_proxy += ",#{$subnet}.#{i+$ip_base}"
     end
 end
 
@@ -112,7 +115,7 @@ Vagrant.configure("2") do |config|
         vb.cpus = $vm_cpus
       end
 
-      ip = "#{$subnet}.#{i+100}"
+      ip = "#{$subnet}.#{i+$ip_base}"
       host_vars[vm_name] = {
         "ip": ip,
         "bootstrap_os": SUPPORTED_OS[$os][:bootstrap_os],
@@ -122,6 +125,17 @@ Vagrant.configure("2") do |config|
       }
 
       config.vm.network :private_network, ip: ip
+      #config.vm.network "public_network",
+        #bridge: "en0: Wi-Fi (AirPort)",
+        #ip: ip
+      ## delete default gw on eth0
+      #config.vm.provision "shell",
+        #run: "always",
+        #inline: "eval `route -n | awk '{ if ($8 ==\"eth0\" && $2 != \"0.0.0.0\") print \"sudo route del default gw \" $2; }'`"
+      ## change default gw to eth1
+      #config.vm.provision "shell",
+        #run: "always",
+        #inline: "sudo route add default gw 192.168.178.1"
       
       # workaround for Vagrant 1.9.1 and centos vm
       # https://github.com/hashicorp/vagrant/issues/8096
