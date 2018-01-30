@@ -73,7 +73,7 @@
     url: http://localhost:10252/healthz
   register: controller_manager_result
   until: controller_manager_result.status == 200
-  retries: 15
+  retries: 30
   delay: 5
 
 - name: Master | wait for the apiserver to be running

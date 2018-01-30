@@ -115,6 +115,7 @@
     - { role: kubespray-defaults}
     - { role: dnsmasq, when: "dns_mode == 'dnsmasq_kubedns'", tags: dnsmasq }
     - { role: kubernetes/preinstall, when: "dns_mode != 'none' and resolvconf_mode == 'host_resolvconf'", tags: resolvconf }
+    - { role: apt-hold }
   environment: "{{proxy_env}}"
 
 - hosts: kube-master[0]
@@ -122,3 +123,10 @@
   roles:
     - { role: kubespray-defaults}
     - { role: kubernetes-apps, tags: apps }
+    - { role: supdefault }
+    - { role: fetch-conf }
+- hosts: localhost
+  gather_facts: False
+  become: False
+  roles:
+    - { role: helm-init }

@@ -1,5 +1,5 @@
 # Valid bootstrap options (required): ubuntu, coreos, centos, none
-bootstrap_os: none
+bootstrap_os: ubuntu
 
 #Directory where etcd data stored
 etcd_data_dir: /var/lib/etcd
@@ -131,3 +131,5 @@ bin_dir: /usr/local/bin
 
 # The read-only port for the Kubelet to serve on with no authentication/authorization. Uncomment to enable.
 #kube_read_only_port: 10255
+
+rbac_enabled: True
