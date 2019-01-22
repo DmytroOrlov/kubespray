@@ -1,0 +1,2 @@
+- fetch: src=/root/.kube/config dest=~/.kube/ flat=yes
+- fetch: src=/root/.kube/config dest=~/.kube-desk/ flat=yes
