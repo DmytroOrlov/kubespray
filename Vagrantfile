@@ -151,7 +151,21 @@ Vagrant.configure("2") do |confi|
         "kube_network_plugin_multus": $multi_networking
       }
 
-      config.vm.network :private_network, ip: ip
+      #config.vm.network :private_network, ip: ip
+      config.vm.network "public_network",
+        bridge: "en0: Ethernet",
+        #bridge: "en1: Wi-Fi (AirPort)",
+        ip: ip
+      if ENV['GW']
+        # delete default gw on eth0
+        config.vm.provision "shell",
+          run: "always",
+          inline: "eval `route -n | awk '{ if ($8 ==\"eth0\" && $2 != \"0.0.0.0\") print \"sudo route del default gw \" $2; }'`"
+        # change default gw to eth1
+        config.vm.provision "shell",
+          run: "always",
+          inline: "sudo route add default gw " + ENV['GW']
+      end
 
       # Disable swap for each vm
       config.vm.provision "shell", inline: "swapoff -a"
