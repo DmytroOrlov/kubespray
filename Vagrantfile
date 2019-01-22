@@ -28,22 +28,21 @@ SUPPORTED_OS = {
 }
 
 # Defaults for config options defined in CONFIG
-$num_instances = 3
+$num_instances = 4
 $instance_name_prefix = "k8s"
 $vm_gui = false
-$vm_memory = 2048
+$vm_memory = 3300
 $vm_cpus = 1
 $shared_folders = {}
 $forwarded_ports = {}
-$subnet = "172.17.8"
-#$subnet = "10.91.12"
+$subnet = "10.93.1"
 $os = "ubuntu"
-$ip_base = 100
+$ip_base = 241
 $network_plugin = "flannel"
 # Setting multi_networking to true will install Multus: https://github.com/intel/multus-cni
 $multi_networking = false
 # The first three nodes are etcd servers
-$etcd_instances = $num_instances
+$etcd_instances = $num_instances - 1
 # The first two nodes are kube masters
 $kube_master_instances = $num_instances == 1 ? $num_instances : ($num_instances - 1)
 # All nodes are kube nodes
@@ -153,8 +152,8 @@ Vagrant.configure("2") do |confi|
 
       #config.vm.network :private_network, ip: ip
       config.vm.network "public_network",
-        bridge: "en0: Ethernet",
-        #bridge: "en1: Wi-Fi (AirPort)",
+        #bridge: "en0: Ethernet",
+        bridge: "en1: Wi-Fi (AirPort)",
         ip: ip
       if ENV['GW']
         # delete default gw on eth0
@@ -164,7 +163,8 @@ Vagrant.configure("2") do |confi|
         # change default gw to eth1
         config.vm.provision "shell",
           run: "always",
-          inline: "sudo route add default gw " + ENV['GW']
+          #inline: "sudo route add default gw " + ENV['GW']
+          inline: "sudo route add default gw " + $subnet + ".1"
       end
 
       # Disable swap for each vm
