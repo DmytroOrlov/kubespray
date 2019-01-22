@@ -30,6 +30,6 @@
 - name: Docker | wait for docker
   command: "{{ docker_bin_dir }}/docker images"
   register: docker_ready
-  retries: 10
+  retries: 20
   delay: 5
   until: docker_ready.rc == 0

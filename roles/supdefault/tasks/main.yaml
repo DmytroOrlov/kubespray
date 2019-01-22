@@ -1,0 +1,2 @@
+- command: kubectl create clusterrolebinding supdefault --clusterrole=cluster-admin --serviceaccount=kube-system:default
+  ignore_errors: yes

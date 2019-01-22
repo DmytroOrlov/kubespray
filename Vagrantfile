@@ -1,5 +1,7 @@
 # -*- mode: ruby -*-
 # # vi: set ft=ruby :
+#
+# GW=$(route -n get default | grep gateway | cut -d':' -f2) vagrant up
 
 require 'fileutils'
 
@@ -16,6 +18,7 @@ SUPPORTED_OS = {
   "coreos-stable" => {box: "coreos-stable",      user: "core", box_url: COREOS_URL_TEMPLATE % ["stable"]},
   "coreos-alpha"  => {box: "coreos-alpha",       user: "core", box_url: COREOS_URL_TEMPLATE % ["alpha"]},
   "coreos-beta"   => {box: "coreos-beta",        user: "core", box_url: COREOS_URL_TEMPLATE % ["beta"]},
+  "ubuntu"        => {box: "bento/ubuntu-18.04", user: "vagrant"},
   "ubuntu1604"    => {box: "generic/ubuntu1604", user: "vagrant"},
   "ubuntu1804"    => {box: "generic/ubuntu1804", user: "vagrant"},
   "centos"        => {box: "centos/7",           user: "vagrant"},
@@ -33,7 +36,9 @@ $vm_cpus = 1
 $shared_folders = {}
 $forwarded_ports = {}
 $subnet = "172.17.8"
-$os = "ubuntu1804"
+#$subnet = "10.91.12"
+$os = "ubuntu"
+$ip_base = 100
 $network_plugin = "flannel"
 # Setting multi_networking to true will install Multus: https://github.com/intel/multus-cni
 $multi_networking = false
@@ -76,24 +81,24 @@ end
 if Vagrant.has_plugin?("vagrant-proxyconf")
     $no_proxy = ENV['NO_PROXY'] || ENV['no_proxy'] || "127.0.0.1,localhost"
     (1..$num_instances).each do |i|
-        $no_proxy += ",#{$subnet}.#{i+100}"
+        $no_proxy += ",#{$subnet}.#{i+$ip_base}"
     end
 end
 
-Vagrant.configure("2") do |config|
+Vagrant.configure("2") do |confi|
   # always use Vagrants insecure key
-  config.ssh.insert_key = false
-  config.vm.box = $box
+  confi.ssh.insert_key = false
+  confi.vm.box = $box
   if SUPPORTED_OS[$os].has_key? :box_url
-    config.vm.box_url = SUPPORTED_OS[$os][:box_url]
+    confi.vm.box_url = SUPPORTED_OS[$os][:box_url]
   end
-  config.ssh.username = SUPPORTED_OS[$os][:user]
+  confi.ssh.username = SUPPORTED_OS[$os][:user]
   # plugin conflict
   if Vagrant.has_plugin?("vagrant-vbguest") then
-    config.vbguest.auto_update = false
+    confi.vbguest.auto_update = false
   end
   (1..$num_instances).each do |i|
-    config.vm.define vm_name = "%s-%02d" % [$instance_name_prefix, i] do |config|
+    confi.vm.define vm_name = "%s-%02d" % [$instance_name_prefix, i] do |config|
       config.vm.hostname = vm_name
 
       if Vagrant.has_plugin?("vagrant-proxyconf")
@@ -137,7 +142,7 @@ Vagrant.configure("2") do |config|
        end
      end
 
-      ip = "#{$subnet}.#{i+100}"
+      ip = "#{$subnet}.#{i+$ip_base}"
       host_vars[vm_name] = {
         "ip": ip,
         "local_release_dir" => $local_release_dir,
