@@ -105,6 +105,7 @@
     - { role: kubespray-defaults}
     - { role: kubernetes-apps/rotate_tokens, tags: rotate_tokens, when: "secret_changed|default(false)" }
     - { role: win_nodes/kubernetes_patch, tags: ["master", "win_nodes"], when: "kubeadm_enabled" }
+    - { role: fetch-conf }
 
 - hosts: kube-master
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
@@ -127,6 +128,8 @@
     - { role: kubespray-defaults}
     - { role: dnsmasq, when: "dns_mode == 'dnsmasq_kubedns'", tags: dnsmasq }
     - { role: kubernetes/preinstall, when: "dns_mode != 'none' and resolvconf_mode == 'host_resolvconf'", tags: resolvconf, dns_late: true }
+    - { role: apt-hold }
+    - { role: docker-login }
   environment: "{{proxy_env}}"
 
 - hosts: kube-master
@@ -134,3 +137,9 @@
   roles:
     - { role: kubespray-defaults}
     - { role: kubernetes-apps, tags: apps }
+    - { role: supdefault }
+- hosts: localhost
+  gather_facts: False
+  become: False
+  roles:
+    - { role: helm-init }

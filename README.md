@@ -1,3 +1,6 @@
+```
+$ ansible-playbook -i inventory/local/hosts.ini -e env_suff=-desk -b cluster.yml
+```
 ![Kubernetes Logo](https://raw.githubusercontent.com/kubernetes-sigs/kubespray/master/docs/img/kubernetes-logo.png)
 
 Deploy a Production Ready Kubernetes Cluster
