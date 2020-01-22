@@ -1,0 +1,2 @@
+- command: helm init
+  ignore_errors: yes

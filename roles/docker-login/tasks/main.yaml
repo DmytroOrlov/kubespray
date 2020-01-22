@@ -1,0 +1,4 @@
+- name: docker-login
+  copy: src=~/.docker/config.json dest=/var/lib/kubelet/config.json
+  #notify:
+    #- restart docker service

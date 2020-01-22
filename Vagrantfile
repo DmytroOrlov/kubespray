@@ -217,6 +217,9 @@ Vagrant.configure("2") do |config|
             "kube-node" => ["#{$instance_name_prefix}-[1:#{$kube_node_instances}]"],
             "k8s-cluster:children" => ["kube-master", "kube-node"],
           }
+          ansible.extra_vars = {
+            env_suff: "-vagrant"
+          }
         end
       end
 
